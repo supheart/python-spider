@@ -10,22 +10,28 @@ class HtmlOutputer(object):
         self.datas.append(data)
 
     def output_html(self):
-        fout = open('output.html', 'w', encoding='utf-8')
+        # fout = open('output.html', 'w', encoding='utf-8')
+        fout = open('output.html', 'w')
 
         fout.write("<html>")
         fout.write("<head>")
         fout.write('<meta http-equiv="Content-Type" content="text/html;charset=utf-8">')
+        fout.write('<link rel="stylesheet" type="text/css" href="table.css">')
         fout.write("<title>show baike msg</title>")
         fout.write("</head>")
         fout.write("<body>")
         fout.write("<table>")
 
-
+        fout.write("<tr>")
+        fout.write("<th>链接</th>")
+        fout.write("<th>标题</th>")
+        fout.write("<th>简介</th>")
+        fout.write("</tr>");
         for data in self.datas:
-            fout.write("<tr>");
+            fout.write("<tr>")
             fout.write('<td>%s</td>' % data['url'])
-            fout.write('<td>%s</td>' % data['title'])
-            fout.write('<td>%s</td>' % data['summary'])
+            fout.write('<td>%s</td>' % data['title'].encode('utf-8'))
+            fout.write('<td>%s</td>' % data['summary'].encode('utf-8'))
             fout.write("</tr>");
 
         fout.write("</table>")
