@@ -43,7 +43,8 @@ class MysqlSave(object):
             self.insertHotComemts(comments)
             self.insertImage(imgList)
             # self.saveImgToDisk(imgList)
-            self.loader.loadImg(imgList)
+            # self.loader.loadImg(imgList)
+            self.loader.loadImgWithFileStream(imgList)
         except Exception as e:
             raise(e)
 
