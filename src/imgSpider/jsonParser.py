@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
 import json
 import shortuuid
@@ -44,11 +44,11 @@ class JsonParser(object):
         if len(content['contentJson']) <= 0:
             return None
         articleModels = set()
-        imgModels = set()
+        imgModels = []
         for urlObj in content['contentJson']:
             if urlObj['type'] == 'img':
-                host = 'http://iil.3b2o.com/img/show/sid/' + urlObj['sid'] + '/w/576/h/1000/t/0/show.' + urlObj['extension']
-                imgModels.add(host)
+                # host = 'http://iil.3b2o.com/img/show/sid/' + urlObj['sid'] + '/w/576/h/1000/t/0/show.' + urlObj['extension']
+                imgModels.append({"id": urlObj['sid'], "extension": urlObj['extension']})
             elif urlObj['type'] == 'article':
                 host = 'http://zhiboba.3b2o.com/article/showListJson/' + urlObj['sid']
                 articleModels.add(host)

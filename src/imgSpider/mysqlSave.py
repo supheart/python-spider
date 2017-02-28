@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
+import loader
 import MySQLdb
+import urllib2
 import time
+import os
 
 class MysqlSave(object):
     def __init__(self):
         self.conn = None
+        self.loader = loader.Loader()
 
     def _conn (self):  
         try:  
@@ -38,30 +42,17 @@ class MysqlSave(object):
             self.insertArticle(article)
             self.insertHotComemts(comments)
             self.insertImage(imgList)
+            # self.saveImgToDisk(imgList)
+            self.loader.loadImg(imgList)
         except Exception as e:
             raise(e)
 
     def insertArticle(self, article):
         self.cursor = self.conn.cursor(MySQLdb.cursors.DictCursor)
 
-        # article.id,
-        # article.add_time,
-        # article.`status`,
-        # article.type,
-        # article.title,
-        # article.detailtime,
-        # article.imgsid,
-        # article.imgwh,
-        # article.hotComments,
-        # article.commCount,
-        # article.pubtime,
-        # article.mod_time,
-        # article.cover_img,
-        # article.content
-        # print(unicode(article['title'], 'gbk'))
-        sqltext = "insert into article values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" % (article['add_time'], article['status'], article['type'], article['title'], article['detailtime'], article['imgsid'], article['imgwh'], article['pkey'], article['commCount'], article['pubtime'], article['mod_time'], article['cover_img'])
-        print(sqltext)
-        rownum = self.cursor.execute("insert into article values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" % (article['add_time'], article['status'], article['type'], article['title'], article['detailtime'], article['imgsid'], article['imgwh'], article['pkey'], article['commCount'], article['pubtime'], article['mod_time'], article['cover_img'], article['content']))
+        sqltext = u"insert into article (add_time, status, type, title, detailtime, imgsid, imgwh, hotComments, commCount, pubtime, mod_time, cover_img, content) values('%s','%s','%s','%s','%s','%s',%d,'%s','%s','%s','%s','%s','%s')" % (article['add_time'], article['status'], article['type'], article['title'], article['detailtime'], article['imgsid'], article['imgwh'], article['pkey'], article['commCount'], article['pubtime'], article['mod_time'], article['cover_img'], article['content'])
+        # print(sqltext)
+        rownum = self.cursor.execute(sqltext)
 
         self.conn.commit()
         self.cursor.close()
@@ -70,19 +61,10 @@ class MysqlSave(object):
     def insertHotComemts(self, comments):
         self.cursor = self.conn.cursor(MySQLdb.cursors.DictCursor)
 
-        # `comment`.id,
-        # `comment`.avatar_sid,
-        # `comment`.avatar_url,
-        # `comment`.content,
-        # `comment`.datetime,
-        # `comment`.good,
-        # `comment`.lou,
-        # `comment`.`name`,
-        # `comment`.`timestamp`,
-        # `comment`.`user`,
-        # `comment`.aid
         for comment in comments:
-            self.cursor.execute("insert into article values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" % (comment['avatar_sid'], comment['avatar_url'], comment['content'], comment['datetime'], comment['good'], comment['lou'], comment['name'], comment['timestamp'], comment['user'], comment['aid']))
+            commenttext = "insert into comment (avatar_sid, avatar_url, content, datetime, good, lou, `name`, `timestamp`, `user`, aid) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" % (comment['avatar_sid'], comment['avatar_url'], comment['content'], comment['datetime'], comment['good'], comment['lou'], comment['name'], comment['timestamp'], comment['user'], comment['aid'])
+            print(commenttext)
+            self.cursor.execute(commenttext)
         
         self.conn.commit()
         self.cursor.close()
@@ -102,7 +84,35 @@ class MysqlSave(object):
         # sourceimg.img8,
         # sourceimg.img9,
         # sourceimg.img10
-        rownum = self.cursor.execute("insert into article values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" % (imgList['aid'],imgList['imgList'][0],imgList['imgList'][1],imgList['imgList'][2],imgList['imgList'][3],imgList['imgList'][4],imgList['imgList'][5],imgList['imgList'][6],imgList['imgList'][7],imgList['imgList'][8],imgList['imgList'][9]))
+        imgs = imgList['imgList']
+        img1 = imgs[0]['id'] + '.' + imgs[0]['extension']
+        img2 = imgs[1]['id'] + '.' + imgs[1]['extension']
+        img3 = imgs[2]['id'] + '.' + imgs[2]['extension']
+        img4 = imgs[3]['id'] + '.' + imgs[3]['extension']
+        img5 = imgs[4]['id'] + '.' + imgs[4]['extension']
+        img6 = imgs[5]['id'] + '.' + imgs[5]['extension']
+        img7 = imgs[6]['id'] + '.' + imgs[6]['extension']
+        img8 = imgs[7]['id'] + '.' + imgs[7]['extension']
+        img9 = imgs[8]['id'] + '.' + imgs[8]['extension']
+        img10 = imgs[9]['id'] + '.' + imgs[9]['extension']
+        rownum = self.cursor.execute("insert into sourceimg(aid, img1, img2, img3, img4, img5, img6, img7, img8, img9, img10) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" % (imgList['aid'],img1,img2,img3,img4,img5,img6,img7,img8,img9,img10))
         
         self.conn.commit()
         self.cursor.close()
+
+    # def saveImgToDisk(self, imgList):
+    #     for img in imgList['imgList']:
+    #         try:
+    #             imgUrl = 'http://iil.3b2o.com/img/show/sid/' + img['id'] + '/w/576/h/1000/t/0/show.' + img['extension']
+    #             response = urllib2.urlopen(imgUrl)
+    #             if response.getcode() != 200:
+    #                 print(u'未下载成功：%s' % imgUrl)
+    #                 continue
+    #             filename = os.path.join(os.path.abspath('.'), "imgs", img['id'] + "." + img['extension'])
+    #             with open(filename,'wb') as f:
+    #                 f.write(response.read())
+    #                 print(u'下载图片: %s' % imgUrl)
+    #                 # time.sleep(0.05)
+    #         except Exception as e:
+    #             print(u'未下载成功：%s' % imgUrl)
+    #             continue

@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
 import urlManager, loader, jsonParser, mysqlSave
-import sys
-
-# sys.setdefaultencoding('utf-8')
 
 class SpiderMain(object):
     # 初始化对象
@@ -27,7 +24,7 @@ class SpiderMain(object):
                 self.urls.addUrls(newUrls)
                 self.saver.save(article, hotComment, imgList)
 
-                if count == 10:
+                if count == 30:
                     break
                 count = count + 1
             except Exception as e:
@@ -37,6 +34,6 @@ class SpiderMain(object):
 
 if __name__=="__main__":
     # 定义网址趴取的入口
-    rootUrl = "http://zhiboba.3b2o.com/article/showListJson/p9BFREre1QG"
+    rootUrl = "http://zhiboba.3b2o.com/article/showListJson/ppdhREre1QG"
     objSpider = SpiderMain()
     objSpider.craw(rootUrl)
